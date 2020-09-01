@@ -40,8 +40,8 @@ public class UserDAO implements IUserDAO {
     public void insertUser(User user) throws SQLException {
         System.out.println(INSERT_USERS_SQL);
         // try-with-resource statement will auto close the connection.
-        try (Connection connection = getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(INSERT_USERS_SQL))
-        {
+        try (Connection connection = getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(INSERT_USERS_SQL)) {
             preparedStatement.setString(1, user.getName());
             preparedStatement.setString(2, user.getEmail());
             preparedStatement.setString(3, user.getCountry());
@@ -115,7 +115,8 @@ public class UserDAO implements IUserDAO {
 
     public boolean updateUser(User user) throws SQLException {
         boolean rowUpdated;
-        try (Connection connection = getConnection(); PreparedStatement statement = connection.prepareStatement(UPDATE_USERS_SQL);) {
+        try (Connection connection = getConnection();
+             PreparedStatement statement = connection.prepareStatement(UPDATE_USERS_SQL);) {
             statement.setString(1, user.getName());
             statement.setString(2, user.getEmail());
             statement.setString(3, user.getCountry());
@@ -129,6 +130,7 @@ public class UserDAO implements IUserDAO {
     @Override
     public User getUserById(int id) {
         User user = null;
+
         String query = "{CALL get_user_by_id(?)}";
         // Step 1: Establishing a Connection
         try (Connection connection = getConnection();
@@ -165,6 +167,33 @@ public class UserDAO implements IUserDAO {
             printSQLException(e);
         }
 
+    }
+
+    @Override
+    public List<User> getUsersByCountry(String countryIn) {
+        List<User> users = new ArrayList<>();
+        String query = "{CALL get_user_by_country(?)}";
+        // try-with-resource statement will auto close the connection.
+        try (Connection connection = getConnection();
+             CallableStatement callableStatement = connection.prepareCall(query);) {
+            callableStatement.setString(1, countryIn);
+            ResultSet rs = callableStatement.executeQuery();
+
+            // Step 4: Process the ResultSet object.
+            while (rs.next()) {
+                int id = rs.getInt("id");
+                String name = rs.getString("name");
+                String email = rs.getString("email");
+                String country = rs.getString("country");
+                users.add(new User(id, name, email, country));
+            }
+
+            System.out.println(callableStatement);
+            callableStatement.executeUpdate();
+        } catch (SQLException e) {
+            printSQLException(e);
+        }
+        return users;
     }
 
     private void printSQLException(SQLException ex) {

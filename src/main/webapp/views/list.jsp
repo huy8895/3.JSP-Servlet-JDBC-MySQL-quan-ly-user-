@@ -4,37 +4,45 @@
 <html>
 <head>
     <title>User Management Application</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
-<center>
+<div class="container" align="center">
     <h1>User Management</h1>
     <h2>
         <a href="/users?action=create">Add New User</a>
     </h2>
-</center>
-<div align="center">
-    <table border="1" cellpadding="5">
-        <caption><h2>List of Users</h2></caption>
-        <tr>
-            <th>ID</th>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Country</th>
-            <th>Actions</th>
-        </tr>
-        <c:forEach var="user" items="${listUser}">
+    <div class="container">
+        <form method="get" action="/users">
+            <input type="text" name="SearchBox">
+            <input type="submit" name="action" value="Search">
+        </form>
+    </div>
+
+    <div align="center">
+        <table border="1" cellpadding="5">
+            <caption><h2>List of Users</h2></caption>
             <tr>
-                <td><c:out value="${user.id}"/></td>
-                <td><c:out value="${user.name}"/></td>
-                <td><c:out value="${user.email}"/></td>
-                <td><c:out value="${user.country}"/></td>
-                <td>
-                    <a href="/users?action=edit&id=${user.id}">Edit</a>
-                    <a href="/users?action=delete&id=${user.id}">Delete</a>
-                </td>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Country</th>
+                <th>Actions</th>
             </tr>
-        </c:forEach>
-    </table>
+            <c:forEach var="user" items="${listUser}">
+                <tr>
+                    <td><c:out value="${user.id}"/></td>
+                    <td><c:out value="${user.name}"/></td>
+                    <td><c:out value="${user.email}"/></td>
+                    <td><c:out value="${user.country}"/></td>
+                    <td>
+                        <a href="/users?action=edit&id=${user.id}">Edit</a>
+                        <a href="/users?action=delete&id=${user.id}">Delete</a>
+                    </td>
+                </tr>
+            </c:forEach>
+        </table>
+    </div>
 </div>
 </body>
 </html>
